@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual College Event Management Portal</title>
+    <!-- Modern Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- Background Elements for Modern UI -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+    <div class="bg-shape shape3"></div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container">
+
+        <!-- Navigation Bar -->
+        <nav class="glass-nav">
+            <div class="logo">
+                <span class="gradient-text">Event</span>Hub
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('home-page')" class="active">Home</a></li>
+                <li><a href="#" onclick="showPage('events-page')">Events</a></li>
+                <li><a href="#" onclick="showPage('student-dashboard')">Student Dashboard</a></li>
+                <li><a href="#" onclick="showPage('admin-dashboard')">Admin Dashboard</a></li>
+                <li><button class="btn-toggle-dark" onclick="toggleDarkMode()">🌙</button></li>
+            </ul>
+        </nav>
+
+        <!-- Notification Panel (Deque) -->
+        <div id="notification-container" class="notification-container">
+            <!-- Notifications injected here -->
+        </div>
+
+        <!-- PAGE CONTENT CONTAINER -->
+        <main class="content-viewport">
+
+            <!-- 1. HOME / LOGIN PAGE -->
+            <section id="home-page" class="page active-page">
+                <div class="hero-section">
+                    <div class="hero-text">
+                        <h1 class="slide-up">Manage College Events <br><span class="gradient-text">Efficiently</span>
+                        </h1>
+                        <p class="fade-in">A premium platform to register, manage, and track college events and
+                            hackathons seamlessly.</p>
+
+                        <div class="login-box glass-card scale-in">
+                            <h3>Portal Access</h3>
+                            <div class="role-selector" style="margin-bottom: 1rem; display:flex; gap: 1rem;">
+                                <label><input type="radio" name="role" value="student" checked
+                                        onchange="toggleLoginFields()"> Student</label>
+                                <label><input type="radio" name="role" value="admin" onchange="toggleLoginFields()">
+                                    Admin</label>
+                            </div>
+
+                            <div id="student-login-fields">
+                                <div class="input-group">
+                                    <input type="text" id="login-student-name" placeholder="Enter your full name">
+                                </div>
+                            </div>
+
+                            <div id="admin-login-fields" style="display:none;">
+                                <div class="input-group">
+                                    <input type="text" id="login-admin-username" placeholder="Admin Username">
+                                </div>
+                                <div class="input-group">
+                                    <input type="password" id="login-admin-password" placeholder="Admin Password">
+                                </div>
+                            </div>
+
+                            <button class="btn-primary full-width" onclick="login()">Enter Portal</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. EVENTS LISTING PAGE -->
+            <section id="events-page" class="page">
+                <div class="section-header" style="flex-direction:column; align-items:flex-start; gap: 1rem;">
+                    <h2>Campus Portal</h2>
+                    <div class="search-bar full-width">
+                        <input type="text" id="event-search" placeholder="Search any event or hackathon..."
+                            onkeyup="searchEventById()">
+                    </div>
+                </div>
+
+                <!-- Trending Section -->
+                <div class="trending-section glass-card mb-2">
+                    <h3>🔥 Top Popular</h3>
+                    <div id="popular-events-container" class="horizontal-scroll">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Live Campus Events Grid -->
+                <h3
+                    style="margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                    🎭 Live Campus Events</h3>
+                <div id="all-events-container" class="events-grid mb-2">
+                    <!-- Event Cards Injected via JS -->
+                </div>
+
+                <!-- Hackathons Grid -->
+                <h3
+                    style="margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                    💻 Upcoming Hackathons</h3>
+                <div id="all-hackathons-container" class="events-grid mb-2">
+                    <!-- Hackathon Cards Injected via JS -->
+                </div>
+            </section>
+
+            <!-- 3. STUDENT DASHBOARD -->
+            <section id="student-dashboard" class="page">
+                <div class="dashboard-header">
+                    <h2>Welcome, <span id="student-name-display" class="gradient-text">Student</span></h2>
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="undoLastRegistration()">
+                            ⟲ Undo Last Registration
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="glass-card full-width">
+                        <h3>Your Status</h3>
+                        <p>Browse the Events page to register for upcoming fests and hackathons!</p>
+                        <button class="btn-primary mt-1" onclick="showPage('events-page')">Browse Events</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. ADMIN DASHBOARD -->
+            <section id="admin-dashboard" class="page">
+                <div class="section-header">
+                    <h2>Admin Center</h2>
+                    <button class="btn-secondary" onclick="fetchAdminStats()">Refresh Data</button>
+                </div>
+
+                <div class="admin-grid">
+                    <!-- Standard Registration Queue -->
+                    <div class="glass-card flex-col">
+                        <h3>Standard Registrations</h3>
+                        <div class="queue-visualizer" id="standard-queue-view">
+                            <!-- Items here -->
+                            <p class="empty-state">Queue is empty</p>
+                        </div>
+                        <button class="btn-secondary mt-auto" onclick="processNext('standard')">Process Next
+                            Student</button>
+                    </div>
+
+                    <!-- VIP Priority Queue -->
+                    <div class="glass-card flex-col border-glow-gold">
+                        <h3>VIP Applications</h3>
+                        <div class="queue-visualizer" id="vip-queue-view">
+                            <!-- Items here -->
+                            <p class="empty-state">No VIPs waiting</p>
+                        </div>
+                        <button class="btn-primary mt-auto" onclick="processNext('vip')">Process VIP</button>
+                    </div>
+
+                    <!-- Waitlist Circular Queue -->
+                    <div class="glass-card flex-col border-glow-blue">
+                        <h3>Waitlist Capacity</h3>
+                        <div class="circular-visualizer" id="waitlist-view">
+                            <!-- Items here -->
+                            <p class="empty-state">Waitlist empty</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- STUDENT REGISTRATION MODAL -->
+    <div id="student-register-modal" class="modal-overlay">
+        <div class="glass-card modal-content scale-in" style="padding: 2rem;">
+            <span class="close-modal" onclick="closeModal('student-register-modal')">×</span>
+            <h3 style="margin-bottom: 1rem;">Register for <span id="reg-event-name" class="gradient-text">Event</span>
+            </h3>
+            <form id="student-registration-form" onsubmit="event.preventDefault(); submitStudentRegistration();">
+                <input type="hidden" id="reg-hidden-event-id">
+
+                <div class="form-row"><input type="email" id="reg-email" placeholder="Mail ID" required></div>
+                <div class="form-row"><input type="text" id="reg-roll" placeholder="Roll No" required></div>
+                <div class="form-row"><input type="text" id="reg-fullname" placeholder="Full Name" required></div>
+                <div class="form-row"><input type="text" id="reg-college" placeholder="College Name" required></div>
+
+                <div class="form-row">
+                    <select id="reg-payment" required>
+                        <option value="" disabled selected>Fee Payment Method</option>
+                        <option value="UPI">UPI / GPay / PhonePe</option>
+                        <option value="Card">Credit / Debit Card</option>
+                        <option value="Cash">Cash on Campus</option>
+                    </select>
+                </div>
+
+                <div class="form-row"><textarea id="reg-address" rows="2" placeholder="Address" required></textarea>
+                </div>
+
+                <div class="form-row checkbox-row mt-1">
+                    <label><input type="checkbox" id="reg-vip"> Apply for VIP Access</label>
+                </div>
+
+                <button type="submit" class="btn-primary full-width mt-1">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN ADD STUDENT MODAL -->
+    <div id="admin-add-modal" class="modal-overlay">
+        <div class="glass-card modal-content scale-in" style="padding: 2rem;">
+            <span class="close-modal" onclick="closeModal('admin-add-modal')">×</span>
+            <h3 style="margin-bottom: 1rem;">Admin: Add Student to <span id="admin-add-event-name"
+                    class="gradient-text">Event</span></h3>
+            <form id="admin-add-form" onsubmit="event.preventDefault(); submitAdminAddStudent();">
+                <input type="hidden" id="admin-hidden-event-id">
+                <div class="form-row"><input type="text" id="admin-add-username" placeholder="Username" required></div>
+                <div class="form-row"><input type="password" id="admin-add-password" placeholder="Temporary Password"
+                        required></div>
+
+                <button type="submit" class="btn-primary full-width mt-1">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Logic -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
